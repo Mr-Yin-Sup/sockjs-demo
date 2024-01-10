@@ -1,0 +1,13 @@
+
+spring:
+  rabbitmq:
+    host: 192.168.2.136
+    port: 5672
+    username: admin
+    password: admin
+    stompUsername: admin
+    stompPasscode: admin
+    stompPort: 61613
+    stompEndPoint: /ws
+server:
+  port: 8081
