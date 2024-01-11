@@ -1,8 +1,8 @@
 package com.example.sockjsdemo1.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.example.sockjsdemo1.model.ChatMessage;
-import com.example.sockjsdemo1.util.JsonUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -40,7 +40,7 @@ public class ChatController {
         chatMessage.setTo(uid);
         chatMessage.setSender("系统消息");
         try {
-            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
+            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JSON.toJSONString(chatMessage));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -59,7 +59,7 @@ public class ChatController {
 
 //            String name = principal.getName();
 //            chatMessage.setSender(name);
-            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
+            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JSON.toJSONString(chatMessage));
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(2);
@@ -79,7 +79,7 @@ public class ChatController {
         try {
 
             System.out.println(chatMessage.toString());
-            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
+            rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JSON.toJSONString(chatMessage));
 
         } catch (Exception e) {
             System.out.println("3");
