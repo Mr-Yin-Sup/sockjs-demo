@@ -57,13 +57,10 @@ public class ChatController {
     public void sendMessageTest(@Payload ChatMessage chatMessage, Principal principal) {
         try {
 
-//            String name = principal.getName();
-//            chatMessage.setSender(name);
             rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JSON.toJSONString(chatMessage));
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println(2);
-            System.out.println(e.getMessage());
+
         }
 
     }

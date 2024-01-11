@@ -16,20 +16,32 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
+var socket ;
+var stompClient;
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
     if(username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
+        if (!socket) {
+            socket = new SockJS('/ws');
+        }
 
-        var socket = new SockJS('/ws');
+        if (stompClient){
+            stompClient.disconnect();
+        }
+
+
         stompClient = Stomp.over(socket);
 
         stompClient.connect({
             username:username
 
         }, onConnected, onError);
+
+
+
     }
     event.preventDefault();
 }
@@ -57,8 +69,12 @@ function onConnected() {
 
 
 function onError(error) {
-    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
-    connectingElement.style.color = 'red';
+    console.log(error)
+    console.log("五秒后重新连接")
+    setTimeout(()=>{connect();},5000);
+
+    // connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+    // connectingElement.style.color = 'red';
 }
 
 
@@ -70,12 +86,14 @@ function sendMessage(event) {
             sender: username,
             content: messageInput.value,
             type: 'CHAT',
-            to:'all'
-
+            to:'all',
+            msgId:generateUUID()
         };
         console.log("----- ："+ messageInput.value);
-        stompClient.send("/app/chat.sendMessageTest", {}, JSON.stringify(chatMessage));
+        stompClient.send("/app/chat.sendMessageTest",{}, JSON.stringify(chatMessage));
         messageInput.value = '';
+    }else{
+        alert("消息发送失败,请检查网络连接")
     }
     event.preventDefault();
 }
@@ -127,6 +145,13 @@ function getAvatarColor(messageSender) {
 
     var index = Math.abs(hash % colors.length);
     return colors[index];
+}
+
+function generateUUID() {
+    var temp_url = URL.createObjectURL(new Blob());
+    var uuid = temp_url.toString(); // blob:https://xxx.com/b250d159-e1b6-4a87-9002-885d90033be3
+    URL.revokeObjectURL(temp_url);
+    return uuid.substr(uuid.lastIndexOf("/") + 1);
 }
 
 usernameForm.addEventListener('submit', connect, true)

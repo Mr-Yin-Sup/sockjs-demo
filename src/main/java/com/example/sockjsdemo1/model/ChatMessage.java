@@ -10,6 +10,7 @@ public class ChatMessage {
     private String content;
     private String sender;
     private String to;
+    private String msgId;
 
     public enum MessageType {
         CHAT,
@@ -57,5 +58,13 @@ public class ChatMessage {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
     }
 }
