@@ -77,7 +77,7 @@ public class ChatController {
 
         System.out.println("有用户加入到了websocket 消息室" + chatMessage.getSender());
         try {
-            System.out.println(8);
+
             System.out.println(chatMessage.toString());
             rabbitTemplate.convertAndSend("topicWebSocketExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
 

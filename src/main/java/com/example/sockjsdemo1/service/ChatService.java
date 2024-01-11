@@ -1,7 +1,7 @@
 package com.example.sockjsdemo1.service;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.example.sockjsdemo1.model.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessagingException;
@@ -20,22 +20,22 @@ public class ChatService {
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
 
-    public Boolean sendMsg(String msg) {
+    public Boolean sendMsg(ChatMessage msg) {
         try {
-            JSONObject msgJson = JSONObject.parseObject(msg);
-            if (msgJson.getString("to").equals("all") && msgJson.getString("type").equals(ChatMessage.MessageType.CHAT.toString())){
-                simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
 
-            }else if (msgJson.getString("to").equals("all") && msgJson.getString("type").equals(ChatMessage.MessageType.JOIN.toString())) {
-                simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
+            if (msg.getTo().equals("all") && msg.getType().equals(ChatMessage.MessageType.CHAT)){
+                simpMessageSendingOperations.convertAndSend("/topic/public", JSON.toJSONString(msg));
 
-            }else if(msgJson.getString("to").equals("all") &&  msgJson.getString("type").equals(ChatMessage.MessageType.LEAVE.toString())) {
-                simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
+            }else if (msg.getTo().equals("all") && msg.getType().equals(ChatMessage.MessageType.JOIN)) {
+                simpMessageSendingOperations.convertAndSend("/topic/public", JSON.toJSONString(msg));
 
-            }else if (!msgJson.getString("to").equals("all") &&  msgJson.getString("type").equals(ChatMessage.MessageType.CHAT.toString())){
+            }else if(msg.getTo().equals("all") &&  msg.getType().equals(ChatMessage.MessageType.LEAVE)) {
+                simpMessageSendingOperations.convertAndSend("/topic/public", JSON.toJSONString(msg));
+
+            }else if (!msg.getTo().equals("all") &&  msg.getType().equals(ChatMessage.MessageType.CHAT)){
                 try {
 //                    simpMessageSendingOperations.convertAndSend("/aaa", msgJson);
-                    simpMessageSendingOperations.convertAndSendToUser(msgJson.getString("to"),"/topic/"+msgJson.getString("to"), msgJson);
+                    simpMessageSendingOperations.convertAndSendToUser(msg.getTo(),"/topic/"+msg.getTo(), JSON.toJSONString(msg));
 //                    System.out.println(MessageFormat.format("Message sent to user: {0}", msgJson.toString()));
                 }catch (Exception e){
                     e.printStackTrace();

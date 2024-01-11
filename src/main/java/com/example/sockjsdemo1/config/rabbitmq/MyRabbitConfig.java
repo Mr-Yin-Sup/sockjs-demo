@@ -1,5 +1,7 @@
 package com.example.sockjsdemo1.config.rabbitmq;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.sockjsdemo1.model.ChatMessage;
 import com.example.sockjsdemo1.service.ChatService;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -130,7 +132,7 @@ public class MyRabbitConfig {
         container.setMessageListener(new ChannelAwareMessageListener() {
             public void onMessage(Message message, com.rabbitmq.client.Channel channel) throws Exception {
                 byte[] body = message.getBody();
-                String msg = new String(body);
+                ChatMessage msg = JSONObject.parseObject(body, ChatMessage.class);
                 System.out.println("rabbitmq收到消息 : " +msg);
                 Boolean sendToWebsocket = chatService.sendMsg(msg);
 
