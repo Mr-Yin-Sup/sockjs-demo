@@ -18,6 +18,7 @@ var colors = [
 
 var socket ;
 var stompClient;
+var reconect;
 function connect(event) {
     username = document.querySelector('#name').value.trim();
 
@@ -65,19 +66,35 @@ function onConnected() {
     )
 
     connectingElement.classList.add('hidden');
+    reconect = undefined;
 }
 
 
 function onError(error) {
-    console.log(error)
+    var messageElement = document.createElement('li');
+    messageElement.classList.add('event-message');
+    message.content = '您已掉线,正在尝试重连...';
+
+    var textElement = document.createElement('p');
+    var messageText = document.createTextNode('消息：'+message.content);
+    textElement.appendChild(messageText);
+
+    messageElement.appendChild(textElement);
+
+    messageArea.appendChild(messageElement);
+    messageArea.scrollTop = messageArea.scrollHeight;
     console.log("五秒后重新连接")
-    setTimeout(()=>{
-        socket.close();
-        socket = undefined;
-        stompClient = undefined;
+    reconect = function (){
+        setTimeout(()=>{
+            if (stompClient && stompClient.connected) stompClient.disconnect();
+            stompClient = undefined;
+            socket.close();
+            socket = undefined;
+
         connect();
         },5000);
-
+    }
+    reconect();
     // connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     // connectingElement.style.color = 'red';
 }

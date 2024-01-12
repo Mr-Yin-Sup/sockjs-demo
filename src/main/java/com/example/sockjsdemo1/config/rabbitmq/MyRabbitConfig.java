@@ -144,6 +144,9 @@ public class MyRabbitConfig {
             }
 
         });
+
+
+
         return container;
     }
 
