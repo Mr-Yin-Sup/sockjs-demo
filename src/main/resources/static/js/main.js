@@ -28,12 +28,9 @@ function connect(event) {
             socket = new SockJS('/ws');
         }
 
-        if (stompClient){
-            stompClient.disconnect();
+        if (!stompClient){
+            stompClient = Stomp.over(socket);
         }
-
-
-        stompClient = Stomp.over(socket);
 
         stompClient.connect({
             username:username
@@ -43,7 +40,10 @@ function connect(event) {
 
 
     }
-    event.preventDefault();
+
+    if (event){
+         event.preventDefault();
+    }
 }
 
 
@@ -71,7 +71,12 @@ function onConnected() {
 function onError(error) {
     console.log(error)
     console.log("五秒后重新连接")
-    setTimeout(()=>{connect();},5000);
+    setTimeout(()=>{
+        socket.close();
+        socket = undefined;
+        stompClient = undefined;
+        connect();
+        },5000);
 
     // connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     // connectingElement.style.color = 'red';
@@ -134,6 +139,7 @@ function onMessageReceived(payload) {
 
     messageArea.appendChild(messageElement);
     messageArea.scrollTop = messageArea.scrollHeight;
+
 }
 
 
